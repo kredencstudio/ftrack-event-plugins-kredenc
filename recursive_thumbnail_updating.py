@@ -9,19 +9,18 @@ def callback(event):
     """
     # update created task thumbnail with first parent thumbnail
     for entity in event['data'].get('entities', []):
-        if entity['entityType'] == 'task' and entity['action'] == 'add':
+        if entity.get('entityType') == 'task' and entity['action'] == 'add':
+            task = None
             try:
-                task = ftrack.Task(id=entity['entityId'])
+                task = ftrack.Task(id=entity.get('entityId'))
             except:
-                continue
+                return
 
-            if not task.get('thumbid'):
-
-                thumbnail = utils.getThumbnailRecursive(task)
-                if thumbnail:
-                    task.setThumbnail(thumbnail)
-                    parent = task.getParent()
-                    log.info('Updating thumbnail for task %s/%s' % (parent.getName(), task.getName()))
+            parent = task.getParent()
+            if parent.get('thumbid') and not task.get('thumbid'):
+                task.set('thumbid', value=parent.get('thumbid'))
+                print 'Updated thumbnail on %s/%s' % (parent.getName(),
+                                                        task.getName())
 
         # Update task thumbnail from published version
         if entity['entityType'] == 'assetversion' and entity['action'] == 'encoded':
@@ -39,7 +38,7 @@ def callback(event):
                 parent = task.getParent()
                 parent.setThumbnail(ftrack.Attachment(id=thumbid))
 
-                log.info('Updating thumbnail for task and shot %s/%s' % (parent.getName(), task.getName()))
+                print 'Updating thumbnail for task and shot %s/%s' % (parent.getName(), task.getName())
 
 
 

@@ -1,5 +1,3 @@
-import sys
-import os
 import ftrack
 import utils
 
@@ -40,10 +38,11 @@ def callback(event):
                                 # Setting next task status
                                 try:
                                     next_task.setStatus(utils.GetStatusByName('ready'))
+                                    print '%s updated to "Ready"' % path
                                 except Exception as e:
-                                    log.error('%s status couldnt be set: %s' % (path, e))
+                                    print '%s status couldnt be set: %s' % (path, e)
                                 else:
-                                    log.info('%s updated to "Ready"' % path)
+                                    print '%s updated to "Ready"' % path
 
 
 # Subscribe to events with the update topic.

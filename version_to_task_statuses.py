@@ -1,5 +1,9 @@
 import sys
 import os
+
+path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ftrack-api')
+sys.path.append(path)
+
 import ftrack
 import utils
 
@@ -11,63 +15,36 @@ def callback(event):
     for entity in event['data'].get('entities', []):
 
         # Filter non-assetversions
-        if entity['entityType'] == 'assetversion' and entity['action'] == 'update' and (entity['keys'][0]=='statusid' or entity['keys'][0]=='ispublished'):
-
+        if entity.get('entityType') == 'assetversion' and entity['action'] == 'update':
             version = ftrack.AssetVersion(id=entity.get('entityId'))
             version_status = version.getStatus()
             try:
                 task = ftrack.Task(version.get('taskid'))
-                task_status = task.getStatus()
-            assetType = version.getAsset().getType().getName()
+            except:
+                return
 
-            if assetType != 'Animation':
-                # Filter to versions with status change to "render queued"
-                if version_status.get('name').lower() == 'pending review':
+            task_status = utils.GetStatusByName(version_status.get('name').lower())
 
-                    task_status = utils.GetStatusByName('pending review')
+            # Filter to versions with status change to "render complete"
+            if version_status.get('name').lower() == 'render complete':
 
-                # Filter to versions with status change to "render queued"
-                if version_status.get('name').lower() == 'reviewed':
-                    task_status = utils.GetStatusByName('pending changes')
+                task_status = utils.GetStatusByName('artist review')
 
-                # Filter to versions with status change to "approved"
-                if version_status.get('name').lower() == 'approved':
+            # Proceed if the task status was set
+            if task_status:
 
-                    if assetType == 'Lighting' or assetType == 'Light Rig':
-                        task_status = utils.GetStatusByName('to render')
-                    else:
-                        task_status = utils.GetStatusByName('complete')
+                # Get path to task
+                path = task.get('name')
+                for p in task.getParents():
+                    path = p.get('name') + '/' + path
 
-                # Filter to versions with status change to "Could be better"
-                if version_status.get('name').lower() == 'CBB':
-                    task_status = utils.GetStatusByName('CBB')
-
-                # Filter to versions with status change to "render complete"
-                if version_status.get('name').lower() == 'on farm':
-                    task_status = utils.GetStatusByName('on farm')
-
-                # Filter to versions with status change to "render complete"
-                if version_status.get('name').lower() == 'render complete':
-                    task_status = utils.GetStatusByName('render complete')
-
-                # Filter to versions with status change to "render failed"
-                if version_status.get('name').lower() == 'render failed':
-                    task_status = utils.GetStatusByName('render failed')
-
-                # Proceed if the task status was set
-                if task_status:
-                    # Get path to task
-                    path = task.get('name')
-                    for p in task.getParents():
-                        path = p.get('name') + '/' + path
-
-                    # Setting task status
-                    try:
-                        task.setStatus(task_status)
-                    except Exception as e:
-                        log.error('%s status couldnt be set: %s' % (path, e))
-                    else:
-                        log.info('%s updated to "%s"' % (path, task_status.get('name')))
+                # Setting task status
+                try:
+                    task.setStatus(task_status)
+                except Exception as e:
+                    print '%s status couldnt be set: %s' % (path, e)
+                else:
+                    print '%s updated to "%s"' % (path, task_status.get('name'))
 
 
 # Subscribe to events with the update topic.
