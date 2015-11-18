@@ -1,12 +1,5 @@
-import logging
-
-log = logging.getLogger()
-
 import ftrack
-import plugins_api
 import utils
-
-topic = 'ftrack.update'
 
 
 def callback(event):
@@ -44,7 +37,6 @@ def callback(event):
                     else:
                         task_status = utils.GetStatusByName('complete')
 
-
             # Proceed if the task status was set
             if task_status:
                 # Get path to task
@@ -60,7 +52,8 @@ def callback(event):
                 else:
                     log.info('%s updated to "%s"' % (path, task_status.get('name')))
 
-def main(event):
-    success = plugins_api.check_project(event, __file__)
-    if success:
-        callback(event)
+
+# Subscribe to events with the update topic.
+ftrack.setup()
+ftrack.EVENT_HUB.subscribe('topic=ftrack.update', callback)
+ftrack.EVENT_HUB.wait()

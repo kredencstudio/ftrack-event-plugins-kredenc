@@ -1,12 +1,7 @@
-import logging
-
-log = logging.getLogger()
-
+import sys
+import os
 import ftrack
-import plugins_api
 import utils
-
-topic = 'ftrack.update'
 
 
 def callback(event):
@@ -20,6 +15,8 @@ def callback(event):
             version = ftrack.AssetVersion(id=entity.get('entityId'))
             task = ftrack.Task(version.get('taskid'))
             current_task_status = task.getStatus().getName()
+            version.getAsset().getType().getName()
+            version.getAsset().getName()
 
             if current_task_status.lower() == 'blocking':
                 comment = version.getComment()
@@ -27,7 +24,8 @@ def callback(event):
                 version.set('comment', value=comment)
 
 
-def main(event):
-    success = plugins_api.check_project(event, __file__)
-    if success:
-        callback(event)
+
+# Subscribe to events with the update topic.
+ftrack.setup()
+ftrack.EVENT_HUB.subscribe('topic=ftrack.update', callback)
+ftrack.EVENT_HUB.wait()

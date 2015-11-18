@@ -1,13 +1,7 @@
-import logging
-import operator
-
+import sys
+import os
 import ftrack
-import plugins_api
 import utils
-
-log = logging.getLogger()
-
-topic = 'ftrack.update'
 
 
 def callback(event):
@@ -52,7 +46,7 @@ def callback(event):
                                     log.info('%s updated to "Ready"' % path)
 
 
-def main(event):
-    success = plugins_api.check_project(event, __file__)
-    if success:
-        callback(event)
+# Subscribe to events with the update topic.
+ftrack.setup()
+ftrack.EVENT_HUB.subscribe('topic=ftrack.update', callback)
+ftrack.EVENT_HUB.wait()
