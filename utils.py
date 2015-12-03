@@ -2,7 +2,6 @@ import os
 import tempfile
 import subprocess
 import operator
-
 import ftrack
 
 

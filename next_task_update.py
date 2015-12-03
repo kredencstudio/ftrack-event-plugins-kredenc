@@ -1,7 +1,6 @@
 import ftrack
 import utils
 
-
 def callback(event):
     """ This plugin triggers when a task's status is updated to any DONE state.
     It searches for the next task via the sorting order in System settings>Types,

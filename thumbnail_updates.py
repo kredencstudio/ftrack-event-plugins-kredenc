@@ -1,6 +1,5 @@
 import ftrack
 import utils
-
 import pprint
 
 
@@ -34,11 +33,9 @@ def callback(event):
                 continue
 
             if thumbid:
-                task.setThumbnail(ftrack.Attachment(id=thumbid))
-                parent = task.getParent()
-                parent.setThumbnail(ftrack.Attachment(id=thumbid))
+                task.set('thumbid', value=thumbid)
 
-                print 'Updating thumbnail for task and shot %s/%s' % (parent.getName(), task.getName())
+                print 'Updating thumbnail for task and shot %s' % (task.getName())
 
 
 

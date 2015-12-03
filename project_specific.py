@@ -1,10 +1,6 @@
 import sys
 import os
 import logging
-
-path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ftrack-api')
-sys.path.append(path)
-
 import ftrack
 import utils
 
