@@ -1,14 +1,5 @@
-import logging
-import operator
-
 import ftrack
-import plugins_api
 import utils
-
-log = logging.getLogger()
-
-topic = 'ftrack.update'
-
 
 def callback(event):
     """ This plugin triggers when a task's status is updated to any DONE state.
@@ -46,13 +37,14 @@ def callback(event):
                                 # Setting next task status
                                 try:
                                     next_task.setStatus(utils.GetStatusByName('ready'))
+                                    print '%s updated to "Ready"' % path
                                 except Exception as e:
-                                    log.error('%s status couldnt be set: %s' % (path, e))
+                                    print '%s status couldnt be set: %s' % (path, e)
                                 else:
-                                    log.info('%s updated to "Ready"' % path)
+                                    print '%s updated to "Ready"' % path
 
 
-def main(event):
-    success = plugins_api.check_project(event, __file__)
-    if success:
-        callback(event)
+# Subscribe to events with the update topic.
+ftrack.setup()
+ftrack.EVENT_HUB.subscribe('topic=ftrack.update', callback)
+ftrack.EVENT_HUB.wait()
