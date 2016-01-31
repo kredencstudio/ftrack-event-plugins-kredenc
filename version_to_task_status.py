@@ -24,8 +24,15 @@ def callback(event):
             # task_status = utils.GetStatusByName(version_status.get('name').lower())
 
             # Filter to versions with status change to "render complete"
-            if version_status.get('name').lower() == 'not ':
-                pass
+            if version_status.get('name').lower() == 'reviewed':
+                task_status = utils.GetStatusByName('change requested')
+
+            if version_status.get('name').lower() == 'approved':
+                task_status = utils.GetStatusByName('complete')
+
+            if version_status.get('name').lower() == 'client review':
+                task_status = utils.GetStatusByName('pending review')
+
 
             # Proceed if the task status was set
             if task_status:
