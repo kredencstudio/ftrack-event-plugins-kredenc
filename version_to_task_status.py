@@ -1,5 +1,3 @@
-import sys
-import os
 import ftrack
 import utils
 
@@ -21,17 +19,17 @@ def callback(event):
             except:
                 return
 
-            # task_status = utils.GetStatusByName(version_status.get('name').lower())
+            # task_status = utils.get_status_by_name(version_status.get('name').lower())
 
             # Filter to versions with status change to "render complete"
             if version_status.get('name').lower() == 'reviewed':
-                task_status = utils.GetStatusByName('change requested')
+                task_status = utils.get_status_by_name('change requested')
 
             if version_status.get('name').lower() == 'approved':
-                task_status = utils.GetStatusByName('complete')
+                task_status = utils.get_status_by_name('complete')
 
             if version_status.get('name').lower() == 'client review':
-                task_status = utils.GetStatusByName('pending review')
+                task_status = utils.get_status_by_name('pending review')
 
 
             # Proceed if the task status was set

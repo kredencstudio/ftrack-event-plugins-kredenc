@@ -19,7 +19,7 @@ def callback(event):
             if parent.get('thumbid') and not task.get('thumbid'):
                 task.set('thumbid', value=parent.get('thumbid'))
                 print 'Updated thumbnail on %s/%s' % (parent.getName(),
-                                                        task.getName())
+                                                      task.getName())
 
         # Update task thumbnail from published version
         if entity['entityType'] == 'assetversion' and entity['action'] == 'encoded':
@@ -34,6 +34,9 @@ def callback(event):
 
             if thumbid:
                 task.set('thumbid', value=thumbid)
+
+                parent = task.getParent()
+                parent.set('thumbid', value=thumbid)
 
                 print 'Updating thumbnail for task and shot %s' % (task.getName())
 

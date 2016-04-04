@@ -24,7 +24,7 @@ def callback(event):
 
                 # Setting next task to NOT STARTED, if on NOT READY
                 if task.getStatus().get('state') == 'DONE':
-                    next_task = utils.GetNextTask(task)
+                    next_task = utils.get_next_task(task)
                     if next_task:
                         if next_task.getStatus().get('state') == 'NOT_STARTED':
                             if next_task.getStatus().get('name').lower() == 'not ready'.lower():
@@ -36,7 +36,7 @@ def callback(event):
 
                                 # Setting next task status
                                 try:
-                                    next_task.setStatus(utils.GetStatusByName('ready'))
+                                    next_task.setStatus(utils.get_status_by_name('ready'))
                                     print '%s updated to "Ready"' % path
                                 except Exception as e:
                                     print '%s status couldnt be set: %s' % (path, e)
