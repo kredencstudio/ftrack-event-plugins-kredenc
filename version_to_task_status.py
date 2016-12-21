@@ -27,6 +27,8 @@ def callback(event):
 
             if version_status.get('name').lower() == 'approved':
                 task_status = utils.get_status_by_name('complete')
+                if task.getType().getName() == 'Lighting':
+                    task_status = utils.get_status_by_name('to render')
 
             if version_status.get('name').lower() == 'client review':
                 task_status = utils.get_status_by_name('pending review')
